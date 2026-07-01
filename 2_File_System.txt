@@ -1,0 +1,226 @@
+1. What is file system? Give names of few file systems.
+A. A file system is the method and data structure used by an operating system to organize, store, manage, and retrieve files on a storage device such as a hard disk, SSD, USB drive, or memory card.
+Few File sytems:
+a. FAT32 - File Allocation Table 32
+b. NTFS - New Technology
+c. exFAT - Extended File Allocation Table
+d. ext4 - Fourth Extended FIlesystem
+e. tmpfs - Temporary File System
+f. SquashFS - Squashed File System
+g. efivars - EFI Variables File System
+
+2. What is the role of the Superblock?
+A. A superblock stores information about an entire filesystem. 
+   It contains:
+    • Filesystem type 
+    • Total blocks 
+    • Free blocks 
+    • Block size 
+    • Mount information 
+    • Root inode 
+
+3. What is an inode? Explain it.
+A. An inode stores metadata about a file, but not the filename.
+   It contains:
+    • File type 
+    • Permissions 
+    • Owner UID/GID 
+    • File size 
+    • Timestamps 
+    • Link count 
+    • Pointers to data blocks 
+   It does not contain:
+    • Filename 
+    • Parent directory name 
+   The filename is stored in a directory entry (dentry).
+
+4. What are storage devices block device. Explain.
+A. A block device stores data in fixed-size blocks.
+   Examples:
+       • HDD 
+       • SSD 
+       • USB drives 
+       • CD/DVD 
+   Characteristics:
+       • Supports random access 
+       • Data is read/written in blocks 
+       • Represented under /dev 
+   Examples:
+   /dev/sda
+   /dev/sdb
+   /dev/nvme0n1 
+
+6. List the types of files in Linux.
+A. Regular File
+   Directory
+   Character Device File
+   Block Device File
+   Symbolic Link
+   Named Pipe (FIFO)
+   Socket
+
+7. What is a hard link and a soft link?
+A. In Linux, a link is a way to give multiple names to a file or point to another file. There are two types:
+    • Hard Link 
+    • Soft Link (Symbolic Link / Symlink) 
+   a. Hard Links
+   A hard link is an additional name for the same inode.
+   Limitations of hard links
+    • Cannot link across filesystems 
+    • Cannot link directories (restricted for safety) 
+    • All links share same inode 
+   b. Soft Links (Symbolic Links)
+   A soft link is a shortcut pointing to a file path, not inode.
+
+8. Given a filename as input, write a program to determine the type of file.
+A. #include <stdio.h>
+   #include <sys/stat.h>
+
+   int main(int argc, char *argv[])
+   {
+       struct stat st;
+
+       if(stat(argv[1], &st) == -1)
+       {
+           perror("stat");
+           return 1;
+       }
+
+       if(S_ISREG(st.st_mode))
+           printf("Regular File\n");
+       else if(S_ISDIR(st.st_mode))
+           printf("Directory\n");
+       else if(S_ISCHR(st.st_mode))
+           printf("Character Device\n");
+       else if(S_ISBLK(st.st_mode))
+           printf("Block Device\n");
+       else if(S_ISFIFO(st.st_mode))
+           printf("FIFO\n");
+       else if(S_ISLNK(st.st_mode))
+           printf("Symbolic Link\n");
+       else if(S_ISSOCK(st.st_mode))
+           printf("Socket\n");
+
+       return 0;
+   }
+   Output: ./8 2_File_System.txt 
+           Regular File
+
+9. If umask value is 0013, what will be the permission of a new file?
+A. Default file permission:
+   666
+   Calculation:
+   666
+   013
+   ---
+   653
+   Result:
+   rw-r-x-wx
+   Permission = 0653
+
+10. Using chmod, modify the permission of a file and verify the changes. Use octal values (e.g. chmod0712 f1.txt).
+A. Create file: touch f1.txt
+   Change permission: chmod 0712 f1.txt
+   Verify: ls -l f1.txt
+   Output: rwx--x-w-
+
+11. What is a file descriptor? How it is different from File Pointer?
+A. A file descriptor and a file pointer are both used to work with files, but they belong to different layers of abstraction in the operating system and programming languages.
+| Feature     | File Descriptor                | File Pointer (FILE *)  |
+| ----------- | ------------------------------ | ---------------------- |
+| Level       | Low-level (OS/kernel)          | High-level (C library) |
+| Type        | Integer (int)                  | Pointer to structure   |
+| API         | `open, read, write`            | `fopen, fread, fwrite` |
+| Buffering   | No buffering (direct)          | Buffered I/O           |
+| Control     | More control, less convenience | Easier to use          |
+| Portability | Unix-specific                  | Standard C (portable)  |
+
+12. Using the stat system call, find the size of a file.
+A. #include <stdio.h>
+   #include <sys/stat.h>
+   int main(int argc,char *argv[])
+   {
+       struct stat st;
+       stat(argv[1], &st);
+       printf("File Size = %ld bytes\n", st.st_size);
+       return 0;
+   } 
+   Output: ./12 8.c
+           File Size = 657 bytes
+                   
+13. Compare the age of two files.
+A. #include <stdio.h>
+   #include <sys/stat.h>
+   int main(int argc,char *argv[])
+   {
+       struct stat f1, f2;
+       stat(argv[1], &f1);
+       stat(argv[2], &f2);
+       if(f1.st_mtime > f2.st_mtime)
+           printf("%s is newer\n", argv[1]);
+       else
+           printf("%s is newer\n", argv[2]);
+       return 0;
+   }
+   Output: $ ./12 8.c f1.txt
+           f1.txt is newer
+           
+14. Implement the date command.
+A. #include <stdio.h>
+   #include <time.h>
+   int main()
+   {
+       time_t t;
+       time(&t);
+       printf("%s", ctime(&t));
+       return 0;
+   }
+   
+   or
+   
+   #include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    system("date");
+    return 0;
+}
+   Output: Mon Jun 22 17:03:35 2026
+
+15. Write a program to change the timestamp of a supplied file - (a) to the current time, and (b) to exactly one week before its existing timestamp.
+A. 
+
+
+16. Use of link(), linkat(, symlink(), symlinkat().
+A. | Function      | Creates              | Purpose                                                                                              |
+   | ------------- | -------------------- | ---------------------------------------------------------------------------------------------------- |
+   | `link()`      | Hard link            | Creates another directory entry for an existing file.                                                |
+   | `linkat()`    | Hard link            | Same as `link()`, but supports relative paths using directory file descriptors and additional flags. |
+   | `symlink()`   | Symbolic (soft) link | Creates a new file that points to another file or directory.                                         |
+   | `symlinkat()` | Symbolic (soft) link | Same as `symlink()`, but supports directory file descriptors.                                        |
+
+
+17. Explain ls -s
+A. Displays allocated disk blocks for files.
+   -s, --size: print the allocated size of each file, in blocks
+
+
+18. What is the use of the commands du, mkfs and readlink?
+A.  du - estimate file space usage
+    mkfs - build a Linux filesystem
+    readlink - print resolved symbolic links or canonical file names
+    
+19. List a few filesystems used in commonly used platforms and operating systems.
+A. |   Platform   |   Common Filesystems   |
+   | ------------ | ---------------------- |
+   | Linux        | ext4, XFS, Btrfs       |
+   | Windows      | FAT32, exFAT, NTFS     |
+   | macOS        | APFS, HFS+             |
+   | Android      | ext4, F2FS             |
+   | USB Drives   | FAT32, exFAT           |
+   | CDs/DVDs     | ISO9660                |
+
+
+    
+
+
