@@ -486,14 +486,90 @@ void void_arithmetic()
    • Use getline() or fgets() to read each line.
    • Use malloc() to save each line, and realloc() to manage the array of line pointers.
 */
+void text_read()
+{
+	char buf[20];
+	while(fgets(buf, strlen(buf), stdin)!=NULL)
+	{
 
+	}
+}
 
-/* 14. Write a C program to implement a stack using pointers with the following
-operations:
-• push
-• pop
-• display
+/* 14. Write a C program to implement a stack using pointers with the following operations:
+	• push
+	• pop
+	• display
 */
+struct Node
+{
+    int data;
+    struct Node *next;
+};
+struct Node *top = NULL;
+void push(int value)
+{
+    struct Node *newNode;
+    newNode = (struct Node *)malloc(sizeof(struct Node));
+    if (newNode == NULL)
+    {
+        printf("Stack Overflow\n");
+        return;
+    }
+    newNode->data = value;
+    newNode->next = top;
+    top = newNode;
+}
+void pop()
+{
+    if (top == NULL)
+    {
+        printf("Stack Underflow\n");
+        return;
+    }
+    top = top->next;
+}
+void display()
+{
+    struct Node *temp;
+    if (top == NULL)
+    {
+        printf("Stack is empty.\n");
+        return;
+    }
+    printf("Stack elements are:\n");
+    temp = top;
+    while (temp != NULL)
+    {
+        printf("%d\n", temp->data);
+        temp = temp->next;
+    }
+}
+void pointers_stack()
+{
+    int choice, value;
+    printf("Stack Using Pointers\n");
+    printf("1. Push\n");
+	printf("2. Pop\n");
+    printf("3. Display\n");
+    printf("4. Exit\n");
+    while (1)
+    {
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+        switch (choice)
+        {
+        case 1:
+            printf("Enter value to push: ");
+            scanf("%d", &value);
+            push(value);
+            break;
+        case 2: pop(); break;
+        case 3: display(); break;
+        case 4: exit(0);
+        default: printf("Invalid choice!\n");
+        }
+    }
+}
 
 /* 15. Write a C program to allocate and free a 2D matrix using double pointers (int **matrix). */
 void double_two2()
@@ -587,13 +663,13 @@ void q18()
 void print(char *ptr, int n)
 {
 	if(n)
-	print(ptr+1, n-1); // print(b,4) -> print(c,3) -> print(d,2) -> print(e,1)
+	print(ptr+1, n-1); // print(b,3) -> print(c,2) -> print(d,1) -> print(e,0)
 	printf("%c",*ptr);
 }
 void q19()
 {
 	char arr[]={'a', 'b', 'c', 'd', 'e'};
-	print(arr,sizeof(arr)-1); // print(a,5)
+	print(arr,sizeof(arr)-1); // print(a,4)
 }
 /* Output: edcba */
 
@@ -667,7 +743,7 @@ int main(void)
 		case 11: plural(); break;
 		case 12: void_arithmetic(); break;
 		//case 13: text_read(); break;
-		//case 14: calculator(); break;
+		case 14: pointers_stack(); break;
 		case 15: double_two2(); break;
 		case 16: q16(); break;
 		case 17: q17(); break;
